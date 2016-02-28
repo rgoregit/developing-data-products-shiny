@@ -13,7 +13,9 @@
     media="only screen and (max-device-width: 480px)" >
   <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
   <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
-  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/nvd3/css/nv.d3.css"></link>
+<link rel=stylesheet href="libraries/widgets/nvd3/css/rNVD3.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
 
   
   <!-- Grab CDN jQuery, fall back to local if offline -->
@@ -23,7 +25,11 @@
     src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
   </script>
   
-  
+  <script src="libraries/widgets/nvd3/js/jquery-1.8.2.min.js"></script>
+<script src="libraries/widgets/nvd3/js/d3.v3.min.js"></script>
+<script src="libraries/widgets/nvd3/js/nv.d3.min-new.js"></script>
+<script src="libraries/widgets/nvd3/js/fisheye.js"></script>
+
 
 </head>
 <body style="opacity: 0">
@@ -61,8 +67,134 @@
     <h2>World Hunger statistics</h2>
   </hgroup>
   <article data-timings="">
-    <p>The data used for this assigment is &quot;hunger.csv&quot;  data file from one of the Coursera course.
-This data isued for assignment to Number of hungery children per year and per country.</p>
+    <p>The data used for this assignment is &quot;hunger.csv&quot;  data file from one of the Coursera course.
+This data is used for assignment to Number of hungry children per year and per country.</p>
+
+<div id = 'chart1' class = 'rChart nvd3'></div>
+
+<script type='text/javascript'>
+ $(document).ready(function(){
+      drawchart1()
+    });
+    function drawchart1(){  
+      var opts = {
+ "dom": "chart1",
+"width":    650,
+"height":    400,
+"x": "YEAR",
+"y": "TCOUNT",
+"type": "multiBarChart",
+"id": "chart1" 
+},
+        data = [
+ {
+ "YEAR": 1999,
+"TCOUNT":         1217.3 
+},
+{
+ "YEAR": 2000,
+"TCOUNT":         3036.6 
+},
+{
+ "YEAR": 2001,
+"TCOUNT":         1162.7 
+},
+{
+ "YEAR": 2002,
+"TCOUNT":          896.1 
+},
+{
+ "YEAR": 2003,
+"TCOUNT":         1022.7 
+},
+{
+ "YEAR": 2004,
+"TCOUNT":          952.7 
+},
+{
+ "YEAR": 2005,
+"TCOUNT":         1165.1 
+},
+{
+ "YEAR": 2006,
+"TCOUNT":           2197 
+},
+{
+ "YEAR": 2007,
+"TCOUNT":         1052.2 
+},
+{
+ "YEAR": 2008,
+"TCOUNT":            993 
+},
+{
+ "YEAR": 2009,
+"TCOUNT":            560 
+},
+{
+ "YEAR": 2010,
+"TCOUNT":          408.6 
+},
+{
+ "YEAR": 2011,
+"TCOUNT":          486.6 
+} 
+]
+  
+      if(!(opts.type==="pieChart" || opts.type==="sparklinePlus" || opts.type==="bulletChart")) {
+        var data = d3.nest()
+          .key(function(d){
+            //return opts.group === undefined ? 'main' : d[opts.group]
+            //instead of main would think a better default is opts.x
+            return opts.group === undefined ? opts.y : d[opts.group];
+          })
+          .entries(data);
+      }
+      
+      if (opts.disabled != undefined){
+        data.map(function(d, i){
+          d.disabled = opts.disabled[i]
+        })
+      }
+      
+      nv.addGraph(function() {
+        var chart = nv.models[opts.type]()
+          .width(opts.width)
+          .height(opts.height)
+          
+        if (opts.type != "bulletChart"){
+          chart
+            .x(function(d) { return d[opts.x] })
+            .y(function(d) { return d[opts.y] })
+        }
+          
+         
+        chart
+  .margin({
+ "left":    100 
+})
+          
+        chart.xAxis
+  .axisLabel("Year")
+  .width(    70)
+
+        
+        
+        chart.yAxis
+  .axisLabel("Count")
+  .width(    80)
+      
+       d3.select("#" + opts.id)
+        .append('svg')
+        .datum(data)
+        .transition().duration(500)
+        .call(chart);
+
+       nv.utils.windowResize(chart.update);
+       return chart;
+      });
+    };
+</script>
 
   </article>
   <!-- Presenter Notes -->
@@ -77,10 +209,10 @@ This data isued for assignment to Number of hungery children per year and per co
 The application includes the following:</p>
 
 <ol>
-<li>input Year range in form of slider , Gender in form of checkbox and others widgets </li>
-<li>sever.R containts the code for data processing and rendering data and plots for ui.R</li>
+<li>Input Year range in form of slider, Gender in form of checkbox and others widgets </li>
+<li>server.R contains the code for data processing and rendering data and plots for ui.R</li>
 <li>This application has three tabs which show hunger count details by country, by year and also provides ability to view and download data.</li>
-<li>all source code and related document are available on git hub server.</li>
+<li>All source code and related document are available on git hub server.</li>
 </ol>
 
   </article>
@@ -92,16 +224,9 @@ The application includes the following:</p>
     <h2>Summary</h2>
   </hgroup>
   <article data-timings="">
-    <p>Data show hunger children statistic for all countries from year 1990 to 2015.
-Most countries very few hungery children compair to countries like bangaladesh.</p>
+    <p>Data show hungry children statistic for all countries from year 1990 to 2015.
+Most countries very few hungry children compare to countries like Bangladesh.</p>
 
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="class" id="id" style="background:;">
-  <article data-timings="">
-    
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -132,12 +257,6 @@ Most countries very few hungery children compair to countries like bangaladesh.<
       <a href="#" target="_self" rel='tooltip' 
         data-slide=4 title='Summary'>
          4
-      </a>
-    </li>
-    <li>
-      <a href="#" target="_self" rel='tooltip' 
-        data-slide=5 title='NA'>
-         5
       </a>
     </li>
   </ul>
